@@ -148,67 +148,121 @@ import random
 #     player(playerx,playery)
 #     pygame.display.update()
 
+class Player:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+        self.image = pygame.image.load("media/images/space_ship.png")
+        self.imageWith = 100
+        self.imageHeight = 93
+
+        self.health = 5
+        self.speed = 2
+
+
 class Game:
     def __init__(self):
+        # khoi tao pygame
         pygame.init()
-        self.screenWidth = 1280
-        self.screenHeight = 800
-        self.gameState = "intro"
-        self.screen = pygame.display.set_mode((self.screenWidth, self.screenHeight))
-        icon = pygame.image.load("media/images/icon.png")
-        pygame.display.set_caption("Chicken Invaders")
-        pygame.display.set_icon(icon)
 
-    def intro(self):
+        # trang thai cua game
+        self.__gameState = "intro"
+
+        # kich co man hinh
+        self.__screenWidth = 1280
+        self.__screenHeight = 800
+
+        # tao cua so game
+        self.__screen = pygame.display.set_mode((self.__screenWidth, self.__screenHeight))
+        icon = pygame.image.load("media/images/icon.png")
+        pygame.display.set_icon(icon)
+        pygame.display.set_caption("Chicken Invaders")
+
+        # tao va set player o vi tri (x, y) (o giua + phia duoi man hinh)
+        self.player = Player(self.__screenWidth/2 - 100/2, self.__screenHeight/2 - 93/2 + 330)
+
+
+    def playIntro(self):
+        # load nhac nen intro
         mixer.music.load("Media/Sounds/welcome_background_music.wav")
         mixer.music.play(-1)
 
+        # load intro background image
         backgroundImage = pygame.image.load("media/images/galaxy_background_pixel_1280x800.jpg")
         introText = pygame.image.load("media/images/intro_text.png")
         introTitle = pygame.image.load("media/images/intro_title.png")
         introAuthor = pygame.image.load("media/images/intro_author.png")
 
-        self.screen.blit(backgroundImage, (0, 0))
-        self.screen.blit(introText, (((self.screenWidth/2) - 750/2), (self.screenHeight/2) - 31/2 + 350))
-        self.screen.blit(introTitle, (((self.screenWidth/2) - 914/2), (self.screenHeight/2) - 80/2 - 100))
-        self.screen.blit(introAuthor, (((self.screenWidth/2) - 750/2 + 80), (self.screenHeight / 2) - 31/2 + 200))
-
-        pygame.display.flip()
+        # hien thi thong tin o man hinh intro
+        self.__screen.blit(backgroundImage, (0, 0))
+        self.__screen.blit(introText, (((self.__screenWidth/2) - 750/2), (self.__screenHeight/2) - 31/2 + 350))
+        self.__screen.blit(introTitle, (((self.__screenWidth/2) - 914/2), (self.__screenHeight/2) - 80/2 - 100))
+        self.__screen.blit(introAuthor, (((self.__screenWidth/2) - 750/2 + 80), (self.__screenHeight / 2) - 31/2 + 200))
+        pygame.display.update()
 
         gameIsBeingOpened = True
         while (gameIsBeingOpened):
 
+            # su kien tat cua so
             for event in pygame.event.get():
                 if (event.type) == pygame.QUIT:
                     gameIsBeingOpened = False
                     pygame.quit()
 
+            # lang nghe
             keys = pygame.key.get_pressed()
             if keys[pygame.K_RETURN]:
-                self.gameState = "play"
+                # thay doi state cua game
+                self.__gameState = "play"
                 gameIsBeingOpened = False
 
-    def play(self):
+
+    def playGame(self):
+        # load nhac nen gameplay
         mixer.music.load("Media/Sounds/game_play_background_music.wav")
         mixer.music.play(-1)
 
+        # load playing background image
         backgroundImage = pygame.image.load("media/images/play_background.jpg")
-        self.screen.blit(backgroundImage, (0, 0))
-        pygame.display.flip()
+        self.__screen.blit(backgroundImage, (0, 0))
 
+        # load player's spaceship image
+        spaceship = pygame.image.load("media/images/space_ship.png")
+
+
+        ## day la vong lap game
         gameIsBeingPlayed = True
         while (gameIsBeingPlayed):
+            # Vong lap game: Su kien thay doi -> cap nhat va xu li thong tin -> ve lai game -> Su kien thay doi ...
+
+            # su kien tat cua so window
             for event in pygame.event.get():
                 if (event.type) == pygame.QUIT:
                     gameIsBeingPlayed = False
                     pygame.quit()
 
+            ### lien tuc lang nghe su kien va thay doi:
+            # di chuyen player
+            keys = pygame.key.get_pressed()
+            if (keys[pygame.K_LEFT] and (self.player.x > 0)):
+                self.player.x -= self.player.speed
+            if (keys[pygame.K_RIGHT] and (self.player.x < (self.__screenWidth - 100))):
+                self.player.x += self.player.speed
+
+            #### lien tuc ve lai game
+            self.__screen.blit(backgroundImage ,(0, 0))
+            self.__screen.blit(spaceship, (self.player.x, self.player.y))
+            pygame.display.update()
+            print(self.player.x, self.player.y)
+
+
     def start(self):
         while (True):
-            if (self.gameState == "intro"):
-                self.intro()
-            elif (self.gameState == "play"):
-                self.play()
+            if (self.__gameState == "intro"):
+                self.playIntro()
+            elif (self.__gameState == "play"):
+                self.playGame()
 
 gameOb = Game()
 gameOb.start()
