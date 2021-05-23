@@ -2,6 +2,11 @@ import pygame
 from pygame import mixer
 
 
+# cac bien toan cuc
+SPRITEGROUP = pygame.sprite.Group()
+
+
+
 class EnemyLevel1(pygame.sprite.Sprite):
 
     def __init__(self, x, y, ):
@@ -43,6 +48,12 @@ class Laser(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 90))
 
         self.rect.y -= self.speed
+
+        # neu ra khoi man hinh thi se bi xoa
+        if (self.rect.y < -10):
+            SPRITEGROUP.remove(self)
+
+
 
 
 class Player(pygame.sprite.Sprite):
@@ -115,13 +126,13 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
 
 
-
 class Game():
+
     def __init__(self):
         pygame.init()
 
         # spritegroup object
-        self.spritegroup = pygame.sprite.Group()
+        #self.spritegroup = pygame.sprite.Group()
 
         # trang thai cua game
         self.__gameState = "intro"
@@ -145,7 +156,7 @@ class Game():
 
         # tao va set player o vi tri (x, y) (o giua + phia duoi man hinh)
         self.player = Player(self.__screenWidth/2, self.__screenHeight/2 + 330)
-        self.spritegroup.add(self.player)
+        SPRITEGROUP.add(self.player)
 
 
     def playIntro(self):
@@ -210,7 +221,7 @@ class Game():
                     pygame.quit()
                 elif (event.type == pygame.KEYDOWN):
                     if (event.key == pygame.K_SPACE):
-                        self.spritegroup.add(Laser(self.player.rect.x, self.player.rect.y))
+                        SPRITEGROUP.add(Laser(self.player.rect.x, self.player.rect.y))
             # ----------------------------------------------------------------------------------------------------------
             ### lien tuc lang nghe su kien va thay doi:
             keys = pygame.key.get_pressed()
@@ -241,8 +252,8 @@ class Game():
 
             pygame.display.update()
             self.__screen.blit(backgroundImage, (0, 0))
-            self.spritegroup.draw(self.__screen)
-            self.spritegroup.update()
+            SPRITEGROUP.draw(self.__screen)
+            SPRITEGROUP.update()
             # ----------------------------------------------------------------------------------------------------------
 
 
