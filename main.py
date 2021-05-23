@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from pygame import mixer
 
@@ -5,13 +7,88 @@ from pygame import mixer
 # cac bien toan cuc
 SPRITEGROUP = pygame.sprite.Group()
 
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 800
 
 
-class EnemyLevel1(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, ):
+class Egg(pygame.sprite.Sprite):
+
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(pygame.image.load("media/images/"))
+        self.sprites = []
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-100.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_0.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_10.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_20.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_30.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_40.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_50.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_60.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_70.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_80.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_90.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_100.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_90.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_80.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_70.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_60.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_50.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_40.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_30.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_20.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_10.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_0.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/egg/egg_-100.png"))
+
+        self.current_sprite = 0
+
+        self.IMAGE_INTERVAL = 20
+        self.last_update_animation = 0
+
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, SCREEN_WIDTH)
+        self.rect.y = 0
+
+        self.health = 10
+        self.speed = 1
+
+    def update(self):
+        self.rect.y += self.speed
+
+        # neu ra khoi man hinh thi se xuat hien lai
+        if (self.rect.y > SCREEN_HEIGHT):
+            self.rect.x = random.randint(0, SCREEN_WIDTH)
+            self.rect.y = 0
+
+        if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
+            self.current_sprite += 1
+            self.last_update_animation = pygame.time.get_ticks()
+
+        # reset hoat anh
+        if (self.current_sprite >= len(self.sprites)):
+            self.current_sprite = 0
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
+
 
 class Laser(pygame.sprite.Sprite):
 
@@ -120,9 +197,10 @@ class Player(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
             self.current_sprite += 1
             self.last_update_animation = pygame.time.get_ticks()
+
+        # reset hoat anh
         if (self.current_sprite >= len(self.sprites)):
             self.current_sprite = 0
-
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
 
 
@@ -144,18 +222,14 @@ class Game():
         self.__score = 0
         self.__level = 1
 
-        # kich co man hinh
-        self.__screenWidth = 1280
-        self.__screenHeight = 800
-
         # tao cua so game
-        self.__screen = pygame.display.set_mode((self.__screenWidth, self.__screenHeight))
+        self.__screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         icon = pygame.image.load("media/images/icon.png")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Chicken Invaders")
 
         # tao va set player o vi tri (x, y) (o giua + phia duoi man hinh)
-        self.player = Player(self.__screenWidth/2, self.__screenHeight/2 + 330)
+        self.player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
         SPRITEGROUP.add(self.player)
 
 
@@ -172,9 +246,9 @@ class Game():
 
         # hien thi thong tin o man hinh intro
         self.__screen.blit(backgroundImage, (0, 0))
-        self.__screen.blit(introText, (((self.__screenWidth/2) - 750/2), (self.__screenHeight/2) - 31/2 + 350))
-        self.__screen.blit(introTitle, (((self.__screenWidth/2) - 914/2), (self.__screenHeight/2) - 80/2 - 100))
-        self.__screen.blit(introAuthor, (((self.__screenWidth/2) - 750/2 + 80), (self.__screenHeight / 2) - 31/2 + 200))
+        self.__screen.blit(introText, (((SCREEN_WIDTH/2) - 750/2), (SCREEN_HEIGHT/2) - 31/2 + 350))
+        self.__screen.blit(introTitle, (((SCREEN_WIDTH/2) - 914/2), (SCREEN_HEIGHT/2) - 80/2 - 100))
+        self.__screen.blit(introAuthor, (((SCREEN_WIDTH/2) - 750/2 + 80), (SCREEN_HEIGHT / 2) - 31/2 + 200))
         pygame.display.update()
 
         gameIsBeingOpened = True
@@ -205,6 +279,11 @@ class Game():
         # khai bao clock
         clock = pygame.time.Clock()
 
+        # level 1
+        # sinh egg
+        for i in range(0, 8):
+            SPRITEGROUP.add(Egg())
+
         # --------------------------------------------------------------------------------------------------------------
         ## day la vong lap game
         gameIsBeingPlayed = True
@@ -224,16 +303,18 @@ class Game():
                         SPRITEGROUP.add(Laser(self.player.rect.x, self.player.rect.y))
             # ----------------------------------------------------------------------------------------------------------
             ### lien tuc lang nghe su kien va thay doi:
-            keys = pygame.key.get_pressed()
 
+
+
+            keys = pygame.key.get_pressed()
             # di chuyen player
             if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
                 self.player.rect.x -= self.player.speed
-            elif (keys[pygame.K_RIGHT] and (self.player.rect.x < (self.__screenWidth - self.player.image.get_width()))):
+            elif (keys[pygame.K_RIGHT] and (self.player.rect.x < (SCREEN_WIDTH - self.player.image.get_width()))):
                 self.player.rect.x += self.player.speed
             elif (keys[pygame.K_UP] and self.player.rect.y > 0):
                 self.player.rect.y -= self.player.speed
-            elif (keys[pygame.K_DOWN] and self.player.rect.y < (self.__screenHeight - self.player.image.get_height())):
+            elif (keys[pygame.K_DOWN] and self.player.rect.y < (SCREEN_HEIGHT - self.player.image.get_height())):
                 self.player.rect.y += self.player.speed
 
             # ----------------------------------------------------------------------------------------------------------
