@@ -21,6 +21,8 @@ class Laser(pygame.sprite.Sprite):
         self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 90))
 
+        self.IMAGE_INTERVAL = 200
+        self.last_update_animation = 0
 
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -32,7 +34,9 @@ class Laser(pygame.sprite.Sprite):
         self.sound.play()
 
     def update(self):
-        self.current_sprite += 1
+        if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
+            self.current_sprite += 1
+            self.last_update_animation = pygame.time.get_ticks()
         if (self.current_sprite >= len(self.sprites)):
             self.current_sprite = 0
 
@@ -89,6 +93,9 @@ class Player(pygame.sprite.Sprite):
         self.sprites.append(pygame.image.load("media/images/player/space_ship_-90.png"))
         self.sprites.append(pygame.image.load("media/images/player/space_ship_-100.png"))
 
+        self.IMAGE_INTERVAL = 10
+        self.last_update_animation = 0
+
         self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
 
@@ -99,7 +106,9 @@ class Player(pygame.sprite.Sprite):
         self.speed = 3
 
     def update(self):
-        self.current_sprite += 1
+        if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
+            self.current_sprite += 1
+            self.last_update_animation = pygame.time.get_ticks()
         if (self.current_sprite >= len(self.sprites)):
             self.current_sprite = 0
 
