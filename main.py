@@ -9,15 +9,12 @@ level2 = pygame.sprite.Group()
 
 level1Enemies = pygame.sprite.Group()
 level2Enemies = pygame.sprite.Group()
-
 lazerList = pygame.sprite.Group()
 
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
-
 LEVEL = 0
-
 SCORE = 0
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -247,6 +244,7 @@ class Player(pygame.sprite.Sprite):
                 level1Enemies.remove(egg)
                 self.health -= 1
                 pygame.display.update()
+
                 if (self.health == 0):
                     self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
                     pygame.mixer.music.stop()
@@ -257,6 +255,18 @@ class Player(pygame.sprite.Sprite):
                     self.sound.play()
                     time.sleep(10)
                     pygame.quit()
+
+                if not level1Enemies:
+                    mixer.music.load("media/sounds/level_complete.wav")
+                    mixer.music.play()
+                    mainFont = pygame.font.SysFont("comicsans", 100)
+                    scoreLabel = mainFont.render(f"LEVEL COMPLETE", 1, (255, 255, 255))
+                    SCREEN.blit(scoreLabel, (SCREEN_WIDTH / 2 - 300, SCREEN_HEIGHT / 2 - 100))
+                    pygame.display.update()
+                    time.sleep(10)
+                    global LEVEL
+                    LEVEL = 2
+                    pygame.display.update()
 
 
 class Game():
@@ -426,21 +436,21 @@ class Game():
                 elif (event.type == pygame.KEYDOWN):
                     if (event.key == pygame.K_SPACE):
                         lazerList.add(Laser(self.player.rect.x, self.player.rect.y))
-                #-------------------------------------------------------------------------------------------------------
-                ### lien tuc lang nghe su kien va thay doi:
-                keys = pygame.key.get_pressed()
-                global LEVEL
-                # di chuyen player
-                if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
-                    self.player.rect.x -= self.player.speed
-                elif (keys[pygame.K_RIGHT] and (self.player.rect.x < (SCREEN_WIDTH - self.player.image.get_width()))):
-                    self.player.rect.x += self.player.speed
-                elif (keys[pygame.K_UP] and self.player.rect.y > 0):
-                    self.player.rect.y -= self.player.speed
-                elif (keys[pygame.K_DOWN] and self.player.rect.y < (SCREEN_HEIGHT - self.player.image.get_height())):
-                    self.player.rect.y += self.player.speed
-                elif (keys[pygame.K_RETURN] and LEVEL == 3):
-                    gameIsBeingPlayed = False
+            #-------------------------------------------------------------------------------------------------------
+            ### lien tuc lang nghe su kien va thay doi:
+            keys = pygame.key.get_pressed()
+            global LEVEL
+            # di chuyen player
+            if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
+                self.player.rect.x -= self.player.speed
+            elif (keys[pygame.K_RIGHT] and (self.player.rect.x < (SCREEN_WIDTH - self.player.image.get_width()))):
+                self.player.rect.x += self.player.speed
+            elif (keys[pygame.K_UP] and self.player.rect.y > 0):
+                self.player.rect.y -= self.player.speed
+            elif (keys[pygame.K_DOWN] and self.player.rect.y < (SCREEN_HEIGHT - self.player.image.get_height())):
+                self.player.rect.y += self.player.speed
+            elif (keys[pygame.K_RETURN] and LEVEL == 3):
+                gameIsBeingPlayed = False
             # ----------------------------------------------------------------------------------------------------------
             #### lien tuc ve lai game
             # ve thong tin diem so cua player
