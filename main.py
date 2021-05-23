@@ -18,10 +18,10 @@ class Laser(pygame.sprite.Sprite):
         self.sprites.append(pygame.image.load("media/images/pixel_laser_red.png"))
         self.sprites.append(pygame.image.load("media/images/pixel_laser_green.png"))
 
-        self.current_sprite = 0
+        self.current_sprite = -1
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 90))
 
-        self.IMAGE_INTERVAL = 200
+        self.IMAGE_INTERVAL = 100
         self.last_update_animation = 0
 
         self.rect = self.image.get_rect()
