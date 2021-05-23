@@ -2,12 +2,26 @@ import pygame
 from pygame import mixer
 
 
+class EnemyLevel1(pygame.sprite.Sprite):
+
+    def __init__(self, x, y, ):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load("media/images/"))
 
 class Laser(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(pygame.image.load("media/images/pixel_laser.png"), (100, 90))
+        self.sprites = []
+        self.sprites.append(pygame.image.load("media/images/pixel_laser_yellow.png"))
+        self.sprites.append(pygame.image.load("media/images/pixel_laser_blue.png"))
+        self.sprites.append(pygame.image.load("media/images/pixel_laser_red.png"))
+        self.sprites.append(pygame.image.load("media/images/pixel_laser_green.png"))
+
+        self.current_sprite = 0
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 90))
+
+
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -18,6 +32,12 @@ class Laser(pygame.sprite.Sprite):
         self.sound.play()
 
     def update(self):
+        self.current_sprite += 1
+        if (self.current_sprite >= len(self.sprites)):
+            self.current_sprite = 0
+
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 90))
+
         self.rect.y -= self.speed
 
 
@@ -25,7 +45,53 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(pygame.image.load("media/images/space_ship.png"), (100, 93))
+
+        self.sprites = []
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-100.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_0.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_10.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_20.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_30.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_40.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_50.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_60.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_70.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_80.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_90.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_100.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_90.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_80.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_70.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_60.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_50.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_40.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_30.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_20.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_10.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_0.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/player/space_ship_-100.png"))
+
+        self.current_sprite = 0
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
+
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
@@ -33,7 +99,12 @@ class Player(pygame.sprite.Sprite):
         self.speed = 3
 
     def update(self):
-        pass
+        self.current_sprite += 1
+        if (self.current_sprite >= len(self.sprites)):
+            self.current_sprite = 0
+
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
+
 
 
 class Game():
