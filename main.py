@@ -20,7 +20,6 @@ SCORE = 0
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
-
 class Egg(pygame.sprite.Sprite):
 
     def __init__(self):
@@ -121,6 +120,105 @@ class Egg(pygame.sprite.Sprite):
                         LEVEL = 2
                         pygame.display.update()
 
+class UFO_2(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.sprites = []
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-100.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_0.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_10.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_20.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_30.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_40.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_50.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_60.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_70.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_80.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_90.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_100.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_90.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_80.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_70.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_60.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_50.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_40.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_30.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_20.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_10.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_0.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/ufo/ufo_-100.png"))
+
+        self.current_sprite = 0
+
+        self.IMAGE_INTERVAL = random.randint(10, 80)
+        self.last_update_animation = 0
+
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
+        self.rect = self.image.get_rect()
+        self.rect.y = random.randint(0, SCREEN_HEIGHT - self.rect.width)
+        self.rect.x = random.randint(-800, 0)
+
+        self.health = 5
+        self.speed = random.randint(1, 2)
+
+    def update(self, ):
+        self.rect.x += self.speed
+
+        # neu ra khoi man hinh thi se xuat hien lai
+        if (self.rect.x > SCREEN_WIDTH):
+            self.rect.y = random.randint(0, SCREEN_HEIGHT - self.rect.width)
+            self.rect.x = random.randint(-800, 0)
+            self.speed = random.randint(1, 2)
+
+        if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
+            self.current_sprite += 1
+            self.last_update_animation = pygame.time.get_ticks()
+
+        # reset hoat anh
+        if (self.current_sprite >= len(self.sprites)):
+            self.current_sprite = 0
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
+
+        # khi lazer ban trung UFO_2
+        for lazer in lazerList:
+            if (pygame.sprite.collide_rect(self, lazer)):
+                lazerList.remove(lazer)
+                self.health -= 1
+                if (self.health == 0):
+                    level2Enemies.remove(self)
+                    self.sound = mixer.Sound("media/sounds/explosion.wav")
+                    self.sound.play()
+                    global SCORE
+                    SCORE += 1
+                    if not level2Enemies:
+                        mixer.music.load("media/sounds/level_complete.wav")
+                        mixer.music.play()
+                        completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
+                        SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
+                        pygame.display.update()
+                        time.sleep(10)
+                        global LEVEL
+                        LEVEL = 3
+                        pygame.display.update()
 
 class Laser(pygame.sprite.Sprite):
 
@@ -235,7 +333,7 @@ class Player(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
 
-        # neu player cham vao egg se bi mat 1 diem health
+        # neu player cham vao egg
         for egg in level1Enemies:
             if (pygame.sprite.collide_rect(self, egg)):
                 self.sound = mixer.Sound("media/sounds/playerbehit.wav")
@@ -257,12 +355,41 @@ class Player(pygame.sprite.Sprite):
                 if not level1Enemies:
                     mixer.music.load("media/sounds/level_complete.wav")
                     mixer.music.play()
-                    completedlevel_label = pygame.image.load("media/images/completedlevel_text.png.png")
+                    completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
                     SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
                     pygame.display.update()
                     time.sleep(10)
                     global LEVEL
                     LEVEL = 2
+                    pygame.display.update()
+
+        # neu player cham vao UFO_2
+        for ufo_2 in level2Enemies:
+            if (pygame.sprite.collide_rect(self, ufo_2)):
+                self.sound = mixer.Sound("media/sounds/playerbehit.wav")
+                self.sound.play()
+                level2Enemies.remove(ufo_2)
+                self.health -= 1
+                pygame.display.update()
+
+                if (self.health == 0):
+                    self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
+                    pygame.mixer.music.stop()
+                    gameover_label = pygame.image.load("media/images/gameover_text.png")
+                    SCREEN.blit(gameover_label, (SCREEN_WIDTH / 2 - 260, SCREEN_HEIGHT / 2 - 33))
+                    pygame.display.update()
+                    self.sound.play()
+                    time.sleep(10)
+                    pygame.quit()
+
+                if not level2Enemies:
+                    mixer.music.load("media/sounds/level_complete.wav")
+                    mixer.music.play()
+                    completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
+                    SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
+                    pygame.display.update()
+                    time.sleep(10)
+                    LEVEL = 3
                     pygame.display.update()
 
 
@@ -291,7 +418,6 @@ class Game():
 
         # tao va set player o vi tri (x, y) (o giua + phia duoi man hinh)
         self.player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
-        level1.add(self.player)
 
 
     def playIntro(self):
@@ -331,6 +457,9 @@ class Game():
 
 
     def playLevel1(self):
+        # add player
+        level1.add(self.player)
+
         # load nhac nen gameplay
         mixer.music.load("media/sounds/level1_music.wav")
         mixer.music.play(-1)
@@ -411,6 +540,8 @@ class Game():
             # ----------------------------------------------------------------------------------------------------------
 
     def playLevel2(self):
+        # add player
+        level2.add(self.player)
         # load nhac nen gameplay
         mixer.music.load("media/sounds/level2_music.wav")
         mixer.music.play(-1)
@@ -421,6 +552,9 @@ class Game():
         # khai bao clock
         clock = pygame.time.Clock()
 
+        # ra linh
+        for i in range(12):
+            level2Enemies.add(UFO_2())
         # --------------------------------------------------------------------------------------------------------------
         ## day la vong lap game
         gameIsBeingPlayed = True
@@ -465,12 +599,15 @@ class Game():
             levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
             SCREEN.blit(levelLabel, (1175, 0))
 
-            level1Enemies.draw(SCREEN)
-            level1Enemies.update()
-            level1.draw(SCREEN)
-            level1.update()
+            level2Enemies.draw(SCREEN)
+            level2Enemies.update()
+
+            level2.draw(SCREEN)
+            level2.update()
+
             lazerList.draw(SCREEN)
             lazerList.update()
+
             pygame.display.update()
             # ----------------------------------------------------------------------------------------------------------
 
