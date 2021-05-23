@@ -113,9 +113,8 @@ class Egg(pygame.sprite.Sprite):
                     if not level1Enemies:
                         mixer.music.load("media/sounds/level_complete.wav")
                         mixer.music.play()
-                        mainFont = pygame.font.SysFont("comicsans", 100)
-                        scoreLabel = mainFont.render(f"LEVEL COMPLETE", 1, (255, 255, 255))
-                        SCREEN.blit(scoreLabel, (SCREEN_WIDTH / 2 - 300, SCREEN_HEIGHT / 2 - 100))
+                        completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
+                        SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
                         pygame.display.update()
                         time.sleep(10)
                         global LEVEL
@@ -143,7 +142,7 @@ class Laser(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-        self.speed = 8
+        self.speed = 7
 
         self.sound = mixer.Sound("media/sounds/shot.wav")
         self.sound.play()
@@ -248,9 +247,8 @@ class Player(pygame.sprite.Sprite):
                 if (self.health == 0):
                     self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
                     pygame.mixer.music.stop()
-                    mainFont = pygame.font.SysFont("comicsans", 100)
-                    scoreLabel = mainFont.render(f"GAME OVER", 1, (255, 255, 255))
-                    SCREEN.blit(scoreLabel, (SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2 - 100))
+                    gameover_label = pygame.image.load("media/images/gameover_text.png")
+                    SCREEN.blit(gameover_label, (SCREEN_WIDTH / 2 - 260, SCREEN_HEIGHT / 2 - 33))
                     pygame.display.update()
                     self.sound.play()
                     time.sleep(10)
@@ -259,9 +257,8 @@ class Player(pygame.sprite.Sprite):
                 if not level1Enemies:
                     mixer.music.load("media/sounds/level_complete.wav")
                     mixer.music.play()
-                    mainFont = pygame.font.SysFont("comicsans", 100)
-                    scoreLabel = mainFont.render(f"LEVEL COMPLETE", 1, (255, 255, 255))
-                    SCREEN.blit(scoreLabel, (SCREEN_WIDTH / 2 - 300, SCREEN_HEIGHT / 2 - 100))
+                    completedlevel_label = pygame.image.load("media/images/completedlevel_text.png.png")
+                    SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
                     pygame.display.update()
                     time.sleep(10)
                     global LEVEL
@@ -397,15 +394,19 @@ class Game():
             SCREEN.blit(levelLabel, (1175, 0))
             # ve chi dan qua level 2
             if (LEVEL == 2):
-                chidan = mainFont.render("Nhan 'ENTER' de qua level 2!", 1, (255, 255, 255))
-                SCREEN.blit(chidan, (SCREEN_WIDTH/2 - 200,SCREEN_HEIGHT/2 + 300))
+                hdchuyenlv_label = pygame.image.load("media/images/chidanqualevel_text.png")
+                SCREEN.blit(hdchuyenlv_label, (SCREEN_WIDTH / 2 - 83, SCREEN_HEIGHT / 2 + 250))
 
+            # draw va update cac SpriteGroup
             level1Enemies.draw(SCREEN)
             level1Enemies.update()
+
             level1.draw(SCREEN)
             level1.update()
+
             lazerList.draw(SCREEN)
             lazerList.update()
+
             pygame.display.update()
             # ----------------------------------------------------------------------------------------------------------
 
@@ -460,6 +461,9 @@ class Game():
             # ve thong tin health cua player
             healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
             SCREEN.blit(healthOfPlayerLabel, (0, 770))
+            # ve thong tin level
+            levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
+            SCREEN.blit(levelLabel, (1175, 0))
 
             level1Enemies.draw(SCREEN)
             level1Enemies.update()
