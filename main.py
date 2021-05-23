@@ -1,14 +1,26 @@
 import random
-
 import pygame
 from pygame import mixer
+import time
 
+# list objects trong game
+level1 = pygame.sprite.Group()
+level2 = pygame.sprite.Group()
+
+level1Enemies = pygame.sprite.Group()
+level2Enemies = pygame.sprite.Group()
+
+lazerList = pygame.sprite.Group()
 
 # cac bien toan cuc
-SPRITEGROUP = pygame.sprite.Group()
-
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
+
+LEVEL = 0
+
+SCORE = 0
+
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 
@@ -61,24 +73,25 @@ class Egg(pygame.sprite.Sprite):
 
         self.current_sprite = 0
 
-        self.IMAGE_INTERVAL = 20
+        self.IMAGE_INTERVAL = random.randint(10, 80)
         self.last_update_animation = 0
 
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, SCREEN_WIDTH)
-        self.rect.y = 0
+        self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
+        self.rect.y = random.randint(-800, 0)
 
-        self.health = 10
-        self.speed = 1
+        self.health = 5
+        self.speed = random.randint(1, 5)
 
-    def update(self):
+    def update(self, ):
         self.rect.y += self.speed
 
         # neu ra khoi man hinh thi se xuat hien lai
         if (self.rect.y > SCREEN_HEIGHT):
-            self.rect.x = random.randint(0, SCREEN_WIDTH)
-            self.rect.y = 0
+            self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
+            self.rect.y = random.randint(-800, 0)
+            self.speed = random.randint(1, 5)
 
         if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
             self.current_sprite += 1
@@ -88,6 +101,29 @@ class Egg(pygame.sprite.Sprite):
         if (self.current_sprite >= len(self.sprites)):
             self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
+
+        # khi lazer ban trung egg
+        for lazer in lazerList:
+            if (pygame.sprite.collide_rect(self, lazer)):
+                lazerList.remove(lazer)
+                self.health -= 1
+                if (self.health == 0):
+                    level1Enemies.remove(self)
+                    self.sound = mixer.Sound("media/sounds/explosion.wav")
+                    self.sound.play()
+                    global SCORE
+                    SCORE += 1
+                    if not level1Enemies:
+                        mixer.music.load("media/sounds/level_complete.wav")
+                        mixer.music.play()
+                        mainFont = pygame.font.SysFont("comicsans", 100)
+                        scoreLabel = mainFont.render(f"LEVEL COMPLETE", 1, (255, 255, 255))
+                        SCREEN.blit(scoreLabel, (SCREEN_WIDTH / 2 - 300, SCREEN_HEIGHT / 2 - 100))
+                        pygame.display.update()
+                        time.sleep(10)
+                        global LEVEL
+                        LEVEL = 2
+                        pygame.display.update()
 
 
 class Laser(pygame.sprite.Sprite):
@@ -112,7 +148,7 @@ class Laser(pygame.sprite.Sprite):
 
         self.speed = 8
 
-        self.sound = mixer.Sound("media/sounds/shoot.wav")
+        self.sound = mixer.Sound("media/sounds/shot.wav")
         self.sound.play()
 
     def update(self):
@@ -128,7 +164,7 @@ class Laser(pygame.sprite.Sprite):
 
         # neu ra khoi man hinh thi se bi xoa
         if (self.rect.y < -10):
-            SPRITEGROUP.remove(self)
+            lazerList.remove(self)
 
 
 
@@ -203,6 +239,25 @@ class Player(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
 
+        # neu player cham vao egg se bi mat 1 diem health
+        for egg in level1Enemies:
+            if (pygame.sprite.collide_rect(self, egg)):
+                self.sound = mixer.Sound("media/sounds/playerbehit.wav")
+                self.sound.play()
+                level1Enemies.remove(egg)
+                self.health -= 1
+                pygame.display.update()
+                if (self.health == 0):
+                    self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
+                    pygame.mixer.music.stop()
+                    mainFont = pygame.font.SysFont("comicsans", 100)
+                    scoreLabel = mainFont.render(f"GAME OVER", 1, (255, 255, 255))
+                    SCREEN.blit(scoreLabel, (SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2 - 100))
+                    pygame.display.update()
+                    self.sound.play()
+                    time.sleep(10)
+                    pygame.quit()
+
 
 class Game():
 
@@ -218,19 +273,18 @@ class Game():
         # FPS
         self.__FPS = 144
 
-        # score and level
-        self.__score = 0
+        # level
         self.__level = 1
 
         # tao cua so game
-        self.__screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        #self.__screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         icon = pygame.image.load("media/images/icon.png")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Chicken Invaders")
 
         # tao va set player o vi tri (x, y) (o giua + phia duoi man hinh)
         self.player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
-        SPRITEGROUP.add(self.player)
+        level1.add(self.player)
 
 
     def playIntro(self):
@@ -245,10 +299,10 @@ class Game():
         introAuthor = pygame.image.load("media/images/intro_author.png")
 
         # hien thi thong tin o man hinh intro
-        self.__screen.blit(backgroundImage, (0, 0))
-        self.__screen.blit(introText, (((SCREEN_WIDTH/2) - 750/2), (SCREEN_HEIGHT/2) - 31/2 + 350))
-        self.__screen.blit(introTitle, (((SCREEN_WIDTH/2) - 914/2), (SCREEN_HEIGHT/2) - 80/2 - 100))
-        self.__screen.blit(introAuthor, (((SCREEN_WIDTH/2) - 750/2 + 80), (SCREEN_HEIGHT / 2) - 31/2 + 200))
+        SCREEN.blit(backgroundImage, (0, 0))
+        SCREEN.blit(introText, (((SCREEN_WIDTH/2) - 750/2), (SCREEN_HEIGHT/2) - 31/2 + 350))
+        SCREEN.blit(introTitle, (((SCREEN_WIDTH/2) - 914/2), (SCREEN_HEIGHT/2) - 80/2 - 100))
+        SCREEN.blit(introAuthor, (((SCREEN_WIDTH/2) - 750/2 + 80), (SCREEN_HEIGHT / 2) - 31/2 + 200))
         pygame.display.update()
 
         gameIsBeingOpened = True
@@ -264,13 +318,14 @@ class Game():
             keys = pygame.key.get_pressed()
             if keys[pygame.K_RETURN]:
                 # thay doi state cua game
-                self.__gameState = "play"
+                global LEVEL
+                LEVEL = 1
                 gameIsBeingOpened = False
 
 
-    def playGame(self):
+    def playLevel1(self):
         # load nhac nen gameplay
-        mixer.music.load("media/sounds/game_play_background_music.wav")
+        mixer.music.load("media/sounds/level1_music.wav")
         mixer.music.play(-1)
 
         # load playing background image
@@ -279,17 +334,16 @@ class Game():
         # khai bao clock
         clock = pygame.time.Clock()
 
-        # level 1
-        # sinh egg
-        for i in range(0, 8):
-            SPRITEGROUP.add(Egg())
-
+        # ra linh
+        for i in range(12):
+            level1Enemies.add(Egg())
         # --------------------------------------------------------------------------------------------------------------
         ## day la vong lap game
         gameIsBeingPlayed = True
         while (gameIsBeingPlayed):
             # Vong lap game: Su kien thay doi -> cap nhat va xu li thong tin -> ve lai game -> Su kien thay doi ...
 
+            SCREEN.blit(backgroundImage, (0, 0))
             # thiet lap FPS
             clock.tick(self.__FPS)
 
@@ -298,15 +352,15 @@ class Game():
                 if (event.type) == pygame.QUIT:
                     gameIsBeingPlayed = False
                     pygame.quit()
+
+                # player ban lazer bang phim SPACE
                 elif (event.type == pygame.KEYDOWN):
                     if (event.key == pygame.K_SPACE):
-                        SPRITEGROUP.add(Laser(self.player.rect.x, self.player.rect.y))
+                        lazerList.add(Laser(self.player.rect.x, self.player.rect.y))
             # ----------------------------------------------------------------------------------------------------------
             ### lien tuc lang nghe su kien va thay doi:
-
-
-
             keys = pygame.key.get_pressed()
+            global LEVEL
             # di chuyen player
             if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
                 self.player.rect.x -= self.player.speed
@@ -316,34 +370,106 @@ class Game():
                 self.player.rect.y -= self.player.speed
             elif (keys[pygame.K_DOWN] and self.player.rect.y < (SCREEN_HEIGHT - self.player.image.get_height())):
                 self.player.rect.y += self.player.speed
+            elif (keys[pygame.K_RETURN] and LEVEL == 2):
+                gameIsBeingPlayed = False
 
-            # ----------------------------------------------------------------------------------------------------------
+            #----------------------------------------------------------------------------------------------------------
             #### lien tuc ve lai game
-
             # ve thong tin diem so cua player
             mainFont = pygame.font.SysFont("comicsans", 40)
-            scoreLabel = mainFont.render(f"Score: {self.__score}", 1, (255, 255, 255))
-            self.__screen.blit(scoreLabel, (0, 0))
+            scoreLabel = mainFont.render(f"Score: {SCORE}", 1, (255, 255, 255))
+            SCREEN.blit(scoreLabel, (0, 0))
             # ve thong tin health cua player
             healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
-            self.__screen.blit(healthOfPlayerLabel, (0, 770))
+            SCREEN.blit(healthOfPlayerLabel, (0, 770))
             # ve thong tin level
-            levelLabel = mainFont.render(f"Level: {self.__level}", 1, (255, 255, 255))
-            self.__screen.blit(levelLabel, (1175, 0))
+            levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
+            SCREEN.blit(levelLabel, (1175, 0))
+            # ve chi dan qua level 2
+            if (LEVEL == 2):
+                chidan = mainFont.render("Nhan 'ENTER' de qua level 2!", 1, (255, 255, 255))
+                SCREEN.blit(chidan, (SCREEN_WIDTH/2 - 200,SCREEN_HEIGHT/2 + 300))
 
+            level1Enemies.draw(SCREEN)
+            level1Enemies.update()
+            level1.draw(SCREEN)
+            level1.update()
+            lazerList.draw(SCREEN)
+            lazerList.update()
             pygame.display.update()
-            self.__screen.blit(backgroundImage, (0, 0))
-            SPRITEGROUP.draw(self.__screen)
-            SPRITEGROUP.update()
             # ----------------------------------------------------------------------------------------------------------
 
+    def playLevel2(self):
+        # load nhac nen gameplay
+        mixer.music.load("media/sounds/level2_music.wav")
+        mixer.music.play(-1)
+
+        # load playing background image
+        backgroundImage = pygame.transform.scale(pygame.image.load("media/images/level2_background.jpg"), (1280, 800))
+
+        # khai bao clock
+        clock = pygame.time.Clock()
+
+        # --------------------------------------------------------------------------------------------------------------
+        ## day la vong lap game
+        gameIsBeingPlayed = True
+        while (gameIsBeingPlayed):
+
+            SCREEN.blit(backgroundImage, (0, 0))
+
+            for event in pygame.event.get():
+                if (event.type) == pygame.QUIT:
+                    gameIsBeingPlayed = False
+                    pygame.quit()
+
+                # player ban lazer bang phim SPACE
+                elif (event.type == pygame.KEYDOWN):
+                    if (event.key == pygame.K_SPACE):
+                        lazerList.add(Laser(self.player.rect.x, self.player.rect.y))
+                #-------------------------------------------------------------------------------------------------------
+                ### lien tuc lang nghe su kien va thay doi:
+                keys = pygame.key.get_pressed()
+                global LEVEL
+                # di chuyen player
+                if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
+                    self.player.rect.x -= self.player.speed
+                elif (keys[pygame.K_RIGHT] and (self.player.rect.x < (SCREEN_WIDTH - self.player.image.get_width()))):
+                    self.player.rect.x += self.player.speed
+                elif (keys[pygame.K_UP] and self.player.rect.y > 0):
+                    self.player.rect.y -= self.player.speed
+                elif (keys[pygame.K_DOWN] and self.player.rect.y < (SCREEN_HEIGHT - self.player.image.get_height())):
+                    self.player.rect.y += self.player.speed
+                elif (keys[pygame.K_RETURN] and LEVEL == 3):
+                    gameIsBeingPlayed = False
+            # ----------------------------------------------------------------------------------------------------------
+            #### lien tuc ve lai game
+            # ve thong tin diem so cua player
+            mainFont = pygame.font.SysFont("comicsans", 40)
+            scoreLabel = mainFont.render(f"Score: {SCORE}", 1, (255, 255, 255))
+            SCREEN.blit(scoreLabel, (0, 0))
+            # ve thong tin health cua player
+            healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
+            SCREEN.blit(healthOfPlayerLabel, (0, 770))
+
+            level1Enemies.draw(SCREEN)
+            level1Enemies.update()
+            level1.draw(SCREEN)
+            level1.update()
+            lazerList.draw(SCREEN)
+            lazerList.update()
+            pygame.display.update()
+            # ----------------------------------------------------------------------------------------------------------
 
     def start(self):
         while (True):
-            if (self.__gameState == "intro"):
+            global LEVEL
+            if (LEVEL == 0):
                 self.playIntro()
-            elif (self.__gameState == "play"):
-                self.playGame()
+            elif (LEVEL == 1):
+                self.playLevel1()
+            elif (LEVEL == 2):
+                self.playLevel2()
+
 
 gameOb = Game()
 gameOb.start()
