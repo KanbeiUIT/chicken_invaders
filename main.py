@@ -14,6 +14,7 @@ lazerList = pygame.sprite.Group()
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
+
 LEVEL = 0
 SCORE = 0
 
@@ -350,16 +351,18 @@ class Player(pygame.sprite.Sprite):
                     pygame.display.update()
                     self.sound.play()
                     time.sleep(10)
-                    pygame.quit()
+                    global LEVEL
+                    LEVEL = 0
+                    for enemy in level1Enemies:
+                        level1Enemies.remove(enemy)
 
-                if not level1Enemies:
+                elif not level1Enemies:
                     mixer.music.load("media/sounds/level_complete.wav")
                     mixer.music.play()
                     completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
                     SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
                     pygame.display.update()
-                    time.sleep(10)
-                    global LEVEL
+                    time.sleep(8)
                     LEVEL = 2
                     pygame.display.update()
 
@@ -380,15 +383,17 @@ class Player(pygame.sprite.Sprite):
                     pygame.display.update()
                     self.sound.play()
                     time.sleep(10)
-                    pygame.quit()
+                    LEVEL = 0
+                    for enemy in level2Enemies:
+                        level2Enemies.remove(enemy)
 
-                if not level2Enemies:
+                elif not level2Enemies:
                     mixer.music.load("media/sounds/level_complete.wav")
                     mixer.music.play()
                     completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
                     SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
                     pygame.display.update()
-                    time.sleep(10)
+                    time.sleep(8)
                     LEVEL = 3
                     pygame.display.update()
 
@@ -478,7 +483,8 @@ class Game():
         gameIsBeingPlayed = True
         while (gameIsBeingPlayed):
             # Vong lap game: Su kien thay doi -> cap nhat va xu li thong tin -> ve lai game -> Su kien thay doi ...
-
+            if (LEVEL == 0):
+                gameIsBeingPlayed = False
             SCREEN.blit(backgroundImage, (0, 0))
             # thiet lap FPS
             clock.tick(self.__FPS)
@@ -496,7 +502,7 @@ class Game():
             # ----------------------------------------------------------------------------------------------------------
             ### lien tuc lang nghe su kien va thay doi:
             keys = pygame.key.get_pressed()
-            global LEVEL
+            #global LEVEL
             # di chuyen player
             if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
                 self.player.rect.x -= self.player.speed
@@ -559,6 +565,9 @@ class Game():
         ## day la vong lap game
         gameIsBeingPlayed = True
         while (gameIsBeingPlayed):
+            global LEVEL
+            if (LEVEL == 0):
+                gameIsBeingPlayed = False
 
             SCREEN.blit(backgroundImage, (0, 0))
 
@@ -574,7 +583,7 @@ class Game():
             #-------------------------------------------------------------------------------------------------------
             ### lien tuc lang nghe su kien va thay doi:
             keys = pygame.key.get_pressed()
-            global LEVEL
+            #global LEVEL
             # di chuyen player
             if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
                 self.player.rect.x -= self.player.speed
