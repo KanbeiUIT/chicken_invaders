@@ -335,6 +335,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
 
         # neu player cham vao egg
+        global SCORE
         for egg in level1Enemies:
             if (pygame.sprite.collide_rect(self, egg)):
                 self.sound = mixer.Sound("media/sounds/playerbehit.wav")
@@ -353,6 +354,9 @@ class Player(pygame.sprite.Sprite):
                     time.sleep(10)
                     global LEVEL
                     LEVEL = 0
+                    SCORE = 0
+                    self.health = 5
+                    self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
                     for enemy in level1Enemies:
                         level1Enemies.remove(enemy)
 
@@ -384,6 +388,9 @@ class Player(pygame.sprite.Sprite):
                     self.sound.play()
                     time.sleep(10)
                     LEVEL = 0
+                    SCORE = 0
+                    self.health = 5
+                    self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
                     for enemy in level2Enemies:
                         level2Enemies.remove(enemy)
 
