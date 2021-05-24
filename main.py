@@ -20,7 +20,7 @@ smallEggList = pygame.sprite.Group()
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
-LEVEL = 4
+LEVEL = 3
 SCORE = 0
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -218,6 +218,7 @@ class UFO(pygame.sprite.Sprite):
                     self.sound.play()
                     global SCORE
                     SCORE += 1
+
                     if not level2Enemies:
                         mixer.music.load("media/sounds/level_complete.wav")
                         mixer.music.play()
@@ -341,7 +342,7 @@ class SmallEgg(pygame.sprite.Sprite):
 
         self.speed = 2
 
-        self.sound = mixer.Sound("media/sounds/shot.wav")
+        self.sound = mixer.Sound("media/sounds/smallegg_sound.wav")
         self.sound.play()
 
     def update(self):
@@ -743,7 +744,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound.play()
                 HEALTHPLAYER -= 1
                 HEALTHBOSS -= 1
-                self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 528)
+                self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                 pygame.display.update()
 
                 if (HEALTHPLAYER == 0):
@@ -796,6 +797,8 @@ class Player(pygame.sprite.Sprite):
                     self.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 330)
                     for enemy in smallEggList:
                         smallEggList.remove(enemy)
+                    for enemy in level4Enemies:
+                        level4Enemies.remove(enemy)
 
 class Game():
 
