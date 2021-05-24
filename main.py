@@ -6,16 +6,17 @@ import time
 # list objects trong game
 level1 = pygame.sprite.Group()
 level2 = pygame.sprite.Group()
+level3 = pygame.sprite.Group()
 
 level1Enemies = pygame.sprite.Group()
 level2Enemies = pygame.sprite.Group()
+level3Enemies = pygame.sprite.Group()
 lazerList = pygame.sprite.Group()
 
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
-
-LEVEL = 0
+LEVEL = 3
 SCORE = 0
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -121,7 +122,7 @@ class Egg(pygame.sprite.Sprite):
                         LEVEL = 2
                         pygame.display.update()
 
-class UFO_2(pygame.sprite.Sprite):
+class UFO(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -199,7 +200,7 @@ class UFO_2(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
 
-        # khi lazer ban trung UFO_2
+        # khi lazer ban trung UFO
         for lazer in lazerList:
             if (pygame.sprite.collide_rect(self, lazer)):
                 lazerList.remove(lazer)
@@ -219,6 +220,106 @@ class UFO_2(pygame.sprite.Sprite):
                         time.sleep(10)
                         global LEVEL
                         LEVEL = 3
+                        pygame.display.update()
+
+class Chicken(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.sprites = []
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-100.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_0.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_10.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_20.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_30.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_40.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_50.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_60.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_70.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_80.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_90.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_100.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_90.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_80.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_70.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_60.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_50.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_40.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_30.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_20.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_10.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_0.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/chicken/chicken_-100.png"))
+
+        self.current_sprite = 0
+
+        self.IMAGE_INTERVAL = random.randint(10, 80)
+        self.last_update_animation = 0
+
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
+        self.rect.y = random.randint(-800, 0)
+
+        self.health = 5
+        self.speed = random.randint(1, 2)
+
+    def update(self, ):
+        self.rect.y += self.speed
+
+        # neu ra khoi man hinh thi se xuat hien lai
+        if (self.rect.y > SCREEN_HEIGHT):
+            self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
+            self.rect.y = random.randint(-800, 0)
+            self.speed = random.randint(1, 2)
+
+        if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
+            self.current_sprite += 1
+            self.last_update_animation = pygame.time.get_ticks()
+
+        # reset hoat anh
+        if (self.current_sprite >= len(self.sprites)):
+            self.current_sprite = 0
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
+
+        # khi lazer ban trung Chicken
+        for lazer in lazerList:
+            if (pygame.sprite.collide_rect(self, lazer)):
+                lazerList.remove(lazer)
+                self.health -= 1
+                if (self.health == 0):
+                    level3Enemies.remove(self)
+                    self.sound = mixer.Sound("media/sounds/explosion.wav")
+                    self.sound.play()
+                    global SCORE
+                    SCORE += 1
+                    if not level3Enemies:
+                        mixer.music.load("media/sounds/level_complete.wav")
+                        mixer.music.play()
+                        completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
+                        SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
+                        pygame.display.update()
+                        time.sleep(10)
+                        global LEVEL
+                        LEVEL = 4
                         pygame.display.update()
 
 class Laser(pygame.sprite.Sprite):
@@ -371,12 +472,12 @@ class Player(pygame.sprite.Sprite):
                     LEVEL = 2
                     pygame.display.update()
 
-        # neu player cham vao UFO_2
-        for ufo_2 in level2Enemies:
-            if (pygame.sprite.collide_rect(self, ufo_2)):
+        # neu player cham vao UFO
+        for ufo in level2Enemies:
+            if (pygame.sprite.collide_rect(self, ufo)):
                 self.sound = mixer.Sound("media/sounds/playerbehit.wav")
                 self.sound.play()
-                level2Enemies.remove(ufo_2)
+                level2Enemies.remove(ufo)
                 self.health -= 1
                 SCORE += 1
                 pygame.display.update()
@@ -404,6 +505,41 @@ class Player(pygame.sprite.Sprite):
                     pygame.display.update()
                     time.sleep(8)
                     LEVEL = 3
+                    pygame.display.update()
+
+        # neu player cham vao Chicken
+        for chicken in level3Enemies:
+            if (pygame.sprite.collide_rect(self, chicken)):
+                self.sound = mixer.Sound("media/sounds/playerbehit.wav")
+                self.sound.play()
+                level3Enemies.remove(chicken)
+                self.health -= 1
+                SCORE += 1
+                pygame.display.update()
+
+                if (self.health == 0):
+                    self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
+                    pygame.mixer.music.stop()
+                    gameover_label = pygame.image.load("media/images/gameover_text.png")
+                    SCREEN.blit(gameover_label, (SCREEN_WIDTH / 2 - 260, SCREEN_HEIGHT / 2 - 33))
+                    pygame.display.update()
+                    self.sound.play()
+                    time.sleep(10)
+                    LEVEL = 0
+                    SCORE = 0
+                    self.health = 5
+                    self.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 330)
+                    for enemy in level3Enemies:
+                        level3Enemies.remove(enemy)
+
+                elif not level3Enemies:
+                    mixer.music.load("media/sounds/level_complete.wav")
+                    mixer.music.play()
+                    completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
+                    SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
+                    pygame.display.update()
+                    time.sleep(8)
+                    LEVEL = 4
                     pygame.display.update()
 
 
@@ -559,7 +695,7 @@ class Game():
 
         # ra linh
         for i in range(12):
-            level2Enemies.add(UFO_2())
+            level2Enemies.add(UFO())
         # --------------------------------------------------------------------------------------------------------------
         ## day la vong lap game
         gameIsBeingPlayed = True
@@ -600,7 +736,7 @@ class Game():
             #### lien tuc ve lai game
             # ve thong tin diem so cua player
             mainFont = pygame.font.SysFont("comicsans", 40)
-            scoreLabel = mainFont.render(f"Score: {SCORE}", 1, (255, 255, 255))
+            scoreLabel = mainFont.render(f"Score: {SCORE}", True, (255, 255, 255))
             SCREEN.blit(scoreLabel, (0, 0))
             # ve thong tin health cua player
             healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
@@ -608,6 +744,10 @@ class Game():
             # ve thong tin level
             levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
             SCREEN.blit(levelLabel, (1175, 0))
+            # ve chi dan qua level 3
+            if (LEVEL == 3):
+                hdchuyenlv_label = pygame.image.load("media/images/chidanqualevel_text.png")
+                SCREEN.blit(hdchuyenlv_label, (SCREEN_WIDTH / 2 - 83, SCREEN_HEIGHT / 2 + 200))
 
             level2Enemies.draw(SCREEN)
             level2Enemies.update()
@@ -621,6 +761,88 @@ class Game():
             pygame.display.update()
             # ----------------------------------------------------------------------------------------------------------
 
+    def playLevel3(self):
+        # add player
+        level3.add(self.player)
+        # load nhac nen gameplay
+        mixer.music.load("media/sounds/level3_music.wav")
+        mixer.music.play(-1)
+
+        # load playing background image
+        backgroundImage = pygame.transform.scale(pygame.image.load("media/images/level3_background.jpg"), (1280, 800))
+
+        # khai bao clock
+        clock = pygame.time.Clock()
+
+        # ra linh
+        for i in range(12):
+            level3Enemies.add(Chicken())
+        # --------------------------------------------------------------------------------------------------------------
+        ## day la vong lap game
+        gameIsBeingPlayed = True
+        while (gameIsBeingPlayed):
+            global LEVEL
+            if (LEVEL == 0):
+                gameIsBeingPlayed = False
+            # thiet lap FPS
+            clock.tick(self.__FPS)
+
+            SCREEN.blit(backgroundImage, (0, 0))
+
+            for event in pygame.event.get():
+                if (event.type) == pygame.QUIT:
+                    gameIsBeingPlayed = False
+                    pygame.quit()
+
+                # player ban lazer bang phim SPACE
+                elif (event.type == pygame.KEYDOWN):
+                    if (event.key == pygame.K_SPACE):
+                        lazerList.add(Laser(self.player.rect.x, self.player.rect.y))
+            #-------------------------------------------------------------------------------------------------------
+            ### lien tuc lang nghe su kien va thay doi:
+            keys = pygame.key.get_pressed()
+            #global LEVEL
+            # di chuyen player
+            if (keys[pygame.K_LEFT] and (self.player.rect.x > 0)):
+                self.player.rect.x -= self.player.speed
+            elif (keys[pygame.K_RIGHT] and (self.player.rect.x < (SCREEN_WIDTH - self.player.image.get_width()))):
+                self.player.rect.x += self.player.speed
+            elif (keys[pygame.K_UP] and self.player.rect.y > 0):
+                self.player.rect.y -= self.player.speed
+            elif (keys[pygame.K_DOWN] and self.player.rect.y < (SCREEN_HEIGHT - self.player.image.get_height())):
+                self.player.rect.y += self.player.speed
+            elif (keys[pygame.K_RETURN] and LEVEL == 4):
+                gameIsBeingPlayed = False
+            # ----------------------------------------------------------------------------------------------------------
+            #### lien tuc ve lai game
+            # ve thong tin diem so cua player
+            mainFont = pygame.font.SysFont("comicsans", 40)
+            scoreLabel = mainFont.render(f"Score: {SCORE}", True, (255, 255, 255))
+            SCREEN.blit(scoreLabel, (0, 0))
+            # ve thong tin health cua player
+            healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
+            SCREEN.blit(healthOfPlayerLabel, (0, 770))
+            # ve thong tin level
+            levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
+            SCREEN.blit(levelLabel, (1175, 0))
+            # ve chi dan qua level 3
+            if (LEVEL == 4):
+                hdchuyenlv_label = pygame.image.load("media/images/chidanqualevel_text.png")
+                SCREEN.blit(hdchuyenlv_label, (SCREEN_WIDTH / 2 - 83, SCREEN_HEIGHT / 2 + 200))
+
+            level3Enemies.draw(SCREEN)
+            level3Enemies.update()
+
+            level3.draw(SCREEN)
+            level3.update()
+
+            lazerList.draw(SCREEN)
+            lazerList.update()
+
+            pygame.display.update()
+            # ----------------------------------------------------------------------------------------------------------
+
+
     def start(self):
         while (True):
             global LEVEL
@@ -630,6 +852,8 @@ class Game():
                 self.playLevel1()
             elif (LEVEL == 2):
                 self.playLevel2()
+            elif (LEVEL ==3):
+                self.playLevel3()
 
 
 gameOb = Game()
