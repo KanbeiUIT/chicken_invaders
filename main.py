@@ -24,7 +24,7 @@ SCORE = 0
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-HEALTHBOSS = 50
+HEALTHBOSS = 100
 HEALTHPLAYER = 5
 
 
@@ -380,7 +380,7 @@ class Boss(pygame.sprite.Sprite):
         self.IMAGE_INTERVAL = random.randint(10, 80)
         self.last_update_animation = 0
 
-        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (400, 400))
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (300, 300))
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
         self.rect.y = random.randint(- self.image.get_height(), 0)
@@ -415,7 +415,7 @@ class Boss(pygame.sprite.Sprite):
             self.last_update_animation = pygame.time.get_ticks()
         if (self.current_sprite >= len(self.sprites)):
             self.current_sprite = 0
-        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (400, 400))
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (300, 300))
 
         # neu cham vao ria man hinh thi doi huong di chuyen
         # cham goc tren + trai
@@ -594,6 +594,7 @@ class Player(pygame.sprite.Sprite):
         global SCORE
         global LEVEL
         global HEALTHPLAYER
+        global HEALTHBOSS
         # neu player cham vao egg
         for egg in level1Enemies:
             if (pygame.sprite.collide_rect(self, egg)):
@@ -704,8 +705,8 @@ class Player(pygame.sprite.Sprite):
             if (pygame.sprite.collide_rect(self, boss)):
                 self.sound = mixer.Sound("media/sounds/playerbehit.wav")
                 self.sound.play()
-                level4Enemies.remove(boss)
                 HEALTHPLAYER -= 1
+                HEALTHBOSS -= 1
                 self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                 pygame.display.update()
 
@@ -732,6 +733,7 @@ class Player(pygame.sprite.Sprite):
                     pygame.display.update()
                     time.sleep(8)
                     LEVEL = 0
+                    self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
                     pygame.display.update()
 
 
