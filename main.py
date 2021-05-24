@@ -19,10 +19,13 @@ lazerList = pygame.sprite.Group()
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
-LEVEL = 3
+LEVEL = 4
 SCORE = 0
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+HEALTHBOSS = 50
+HEALTHPLAYER = 5
 
 
 class Egg(pygame.sprite.Sprite):
@@ -183,7 +186,7 @@ class UFO(pygame.sprite.Sprite):
         self.rect.x = random.randint(-800, 0)
 
         self.health = 5
-        self.speed = random.randint(1, 2)
+        self.speed = random.randint(1, 3)
 
     def update(self, ):
         self.rect.x += self.speed
@@ -192,7 +195,7 @@ class UFO(pygame.sprite.Sprite):
         if (self.rect.x > SCREEN_WIDTH):
             self.rect.y = random.randint(0, SCREEN_HEIGHT - self.rect.width)
             self.rect.x = random.randint(-800, 0)
-            self.speed = random.randint(1, 2)
+            self.speed = random.randint(1, 3)
 
         if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
             self.current_sprite += 1
@@ -283,16 +286,16 @@ class Chicken(pygame.sprite.Sprite):
         self.rect.y = random.randint(0, 800)
 
         self.health = 5
-        self.speed = random.randint(1, 2)
+        self.speed = random.randint(1, 3)
 
-    def update(self, ):
+    def update(self):
         self.rect.x -= self.speed
 
         # neu ra khoi man hinh thi se xuat hien lai
         if (self.rect.x < 0):
             self.rect.x = random.randint(SCREEN_WIDTH, SCREEN_WIDTH + 800)
             self.rect.y = random.randint(0, 800)
-            self.speed = random.randint(1, 2)
+            self.speed = random.randint(1, 3)
 
         if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
             self.current_sprite += 1
@@ -323,6 +326,157 @@ class Chicken(pygame.sprite.Sprite):
                         time.sleep(10)
                         global LEVEL
                         LEVEL = 4
+                        pygame.display.update()
+
+class Boss(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.sprites = []
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-100.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_0.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_10.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_20.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_30.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_40.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_50.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_60.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_70.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_80.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_90.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_100.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_90.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_80.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_70.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_60.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_50.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_40.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_30.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_20.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_10.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_0.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-10.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-20.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-30.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-40.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-50.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-60.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-70.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-80.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-90.png"))
+        self.sprites.append(pygame.image.load("media/images/boss/boss_-100.png"))
+
+        self.current_sprite = 0
+
+        self.IMAGE_INTERVAL = random.randint(10, 80)
+        self.last_update_animation = 0
+
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (400, 400))
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
+        self.rect.y = random.randint(- self.image.get_height(), 0)
+
+        self.speed = 2
+
+        # huong di chuyen cua boss:
+        # 0: di xuong
+        # 1: di len
+        # 2: di qua trai
+        # 3: di qua phai
+        self.moveWay = 0
+
+    def diChuyen(self):
+        if (self.moveWay == 0):
+            self.rect.y += self.speed
+        elif (self.moveWay == 1):
+            self.rect.y -= self.speed
+        elif (self.moveWay == 2):
+            self.rect.x -= self.speed
+        elif (self.moveWay == 3):
+            self.rect.x += self.speed
+
+    def randomHuongDiChuyen(self):
+        self.moveWay = random.randint(0, 3)
+
+
+    def update(self):
+        # reset hoat anh
+        if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
+            self.current_sprite += 1
+            self.last_update_animation = pygame.time.get_ticks()
+        if (self.current_sprite >= len(self.sprites)):
+            self.current_sprite = 0
+        self.image = pygame.transform.scale(self.sprites[self.current_sprite], (400, 400))
+
+        # neu cham vao ria man hinh thi doi huong di chuyen
+        # cham goc tren + trai
+        if (self.rect.x < 0 and self.rect.y < 0):
+            while (self.moveWay == 1 or self.moveWay == 2):
+                self.randomHuongDiChuyen()
+        # cham goc tren + phai
+        elif ( ( self.rect.x > ( SCREEN_WIDTH - self.image.get_width() ) ) and self.rect.y < 0):
+            while (self.moveWay == 1 or self.moveWay == 3):
+                self.randomHuongDiChuyen()
+        # cham goc duoi _ trai
+        elif ( ( self.rect.y > (SCREEN_HEIGHT - self.image.get_height() ) ) and self.rect.x < 0):
+            while (self.moveWay == 0 or self.moveWay == 2):
+                self.randomHuongDiChuyen()
+        # cham goc duoi + phai
+        elif ( ( self.rect.x > ( SCREEN_WIDTH - self.image.get_width() ) ) and ( self.rect.y > ( SCREEN_HEIGHT - self.image.get_height() ) ) ):
+            while (self.moveWay == 0 or self.moveWay == 3):
+                self.randomHuongDiChuyen()
+        # cham ria duoi
+        elif ( ( self.rect.y > ( SCREEN_HEIGHT - self.image.get_height() ) ) and ( self.moveWay == 0 ) ):
+            while (self.moveWay == 0):
+                self.randomHuongDiChuyen()
+        # cham ria tren
+        elif (self.rect.y < 0 and (self.moveWay == 1)):
+            while (self.moveWay == 1):
+                self.randomHuongDiChuyen()
+        # cham ria phai
+        elif ( ( self.rect.x > ( SCREEN_WIDTH - self.image.get_width() ) ) and ( self.moveWay == 3 ) ):
+            while (self.moveWay == 3):
+                self.randomHuongDiChuyen()
+        # cham ria trai
+        elif (self.rect.x < 0 and (self.moveWay == 2)):
+            while (self.moveWay == 2):
+                self.randomHuongDiChuyen()
+
+        self.diChuyen()
+
+        # khi lazer ban trung Boss
+        global HEALTHBOSS
+        global SCORE
+        global LEVEL
+        global HEALTHPLAYER
+        for lazer in lazerList:
+            if (pygame.sprite.collide_rect(self, lazer)):
+                lazerList.remove(lazer)
+                HEALTHBOSS -= 1
+                if (HEALTHBOSS == 0):
+                    level4Enemies.remove(self)
+                    self.sound = mixer.Sound("media/sounds/explosion.wav")
+                    self.sound.play()
+                    SCORE += 1
+                    if not level4Enemies:
+                        mixer.music.load("media/sounds/level_complete.wav")
+                        mixer.music.play()
+                        completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
+                        SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
+                        pygame.display.update()
+                        time.sleep(10)
+                        LEVEL = 0
+                        HEALTHPLAYER = 5
+
                         pygame.display.update()
 
 class Laser(pygame.sprite.Sprite):
@@ -425,7 +579,6 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        self.health = 5
         self.speed = 3
 
     def update(self):
@@ -438,18 +591,20 @@ class Player(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (100, 93))
 
-        # neu player cham vao egg
         global SCORE
+        global LEVEL
+        global HEALTHPLAYER
+        # neu player cham vao egg
         for egg in level1Enemies:
             if (pygame.sprite.collide_rect(self, egg)):
                 self.sound = mixer.Sound("media/sounds/playerbehit.wav")
                 self.sound.play()
                 level1Enemies.remove(egg)
-                self.health -= 1
+                HEALTHPLAYER -= 1
                 SCORE += 1
                 pygame.display.update()
 
-                if (self.health == 0):
+                if (HEALTHPLAYER == 0):
                     self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
                     pygame.mixer.music.stop()
                     gameover_label = pygame.image.load("media/images/gameover_text.png")
@@ -457,10 +612,9 @@ class Player(pygame.sprite.Sprite):
                     pygame.display.update()
                     self.sound.play()
                     time.sleep(10)
-                    global LEVEL
                     LEVEL = 0
                     SCORE = 0
-                    self.health = 5
+                    HEALTHPLAYER = 5
                     self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
                     for enemy in level1Enemies:
                         level1Enemies.remove(enemy)
@@ -481,11 +635,11 @@ class Player(pygame.sprite.Sprite):
                 self.sound = mixer.Sound("media/sounds/playerbehit.wav")
                 self.sound.play()
                 level2Enemies.remove(ufo)
-                self.health -= 1
+                HEALTHPLAYER -= 1
                 SCORE += 1
                 pygame.display.update()
 
-                if (self.health == 0):
+                if (HEALTHPLAYER == 0):
                     self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
                     pygame.mixer.music.stop()
                     gameover_label = pygame.image.load("media/images/gameover_text.png")
@@ -495,7 +649,7 @@ class Player(pygame.sprite.Sprite):
                     time.sleep(10)
                     LEVEL = 0
                     SCORE = 0
-                    self.health = 5
+                    HEALTHPLAYER = 5
                     self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
                     for enemy in level2Enemies:
                         level2Enemies.remove(enemy)
@@ -516,11 +670,11 @@ class Player(pygame.sprite.Sprite):
                 self.sound = mixer.Sound("media/sounds/playerbehit.wav")
                 self.sound.play()
                 level3Enemies.remove(chicken)
-                self.health -= 1
+                HEALTHPLAYER -= 1
                 SCORE += 1
                 pygame.display.update()
 
-                if (self.health == 0):
+                if (HEALTHPLAYER == 0):
                     self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
                     pygame.mixer.music.stop()
                     gameover_label = pygame.image.load("media/images/gameover_text.png")
@@ -530,7 +684,7 @@ class Player(pygame.sprite.Sprite):
                     time.sleep(10)
                     LEVEL = 0
                     SCORE = 0
-                    self.health = 5
+                    HEALTHPLAYER = 5
                     self.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 330)
                     for enemy in level3Enemies:
                         level3Enemies.remove(enemy)
@@ -543,6 +697,41 @@ class Player(pygame.sprite.Sprite):
                     pygame.display.update()
                     time.sleep(8)
                     LEVEL = 4
+                    pygame.display.update()
+
+        # neu player cham vao Boss
+        for boss in level4Enemies:
+            if (pygame.sprite.collide_rect(self, boss)):
+                self.sound = mixer.Sound("media/sounds/playerbehit.wav")
+                self.sound.play()
+                level4Enemies.remove(boss)
+                HEALTHPLAYER -= 1
+                self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+                pygame.display.update()
+
+                if (HEALTHPLAYER == 0):
+                    self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
+                    pygame.mixer.music.stop()
+                    gameover_label = pygame.image.load("media/images/gameover_text.png")
+                    SCREEN.blit(gameover_label, (SCREEN_WIDTH / 2 - 260, SCREEN_HEIGHT / 2 - 33))
+                    pygame.display.update()
+                    self.sound.play()
+                    time.sleep(10)
+                    LEVEL = 0
+                    SCORE = 0
+                    HEALTHPLAYER = 5
+                    self.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 330)
+                    for enemy in level4Enemies:
+                        level4Enemies.remove(enemy)
+
+                elif not level4Enemies:
+                    mixer.music.load("media/sounds/level_complete.wav")
+                    mixer.music.play()
+                    completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
+                    SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
+                    pygame.display.update()
+                    time.sleep(8)
+                    LEVEL = 0
                     pygame.display.update()
 
 
@@ -660,7 +849,7 @@ class Game():
             scoreLabel = mainFont.render(f"Score: {SCORE}", 1, (255, 255, 255))
             SCREEN.blit(scoreLabel, (0, 0))
             # ve thong tin health cua player
-            healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
+            healthOfPlayerLabel = mainFont.render(f"Player's health: {HEALTHPLAYER}", 1, (255, 255, 255))
             SCREEN.blit(healthOfPlayerLabel, (0, 770))
             # ve thong tin level
             levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
@@ -742,7 +931,7 @@ class Game():
             scoreLabel = mainFont.render(f"Score: {SCORE}", True, (255, 255, 255))
             SCREEN.blit(scoreLabel, (0, 0))
             # ve thong tin health cua player
-            healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
+            healthOfPlayerLabel = mainFont.render(f"Player's health: {HEALTHPLAYER}", 1, (255, 255, 255))
             SCREEN.blit(healthOfPlayerLabel, (0, 770))
             # ve thong tin level
             levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
@@ -823,7 +1012,7 @@ class Game():
             scoreLabel = mainFont.render(f"Score: {SCORE}", True, (255, 255, 255))
             SCREEN.blit(scoreLabel, (0, 0))
             # ve thong tin health cua player
-            healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
+            healthOfPlayerLabel = mainFont.render(f"Player's health: {HEALTHPLAYER}", 1, (255, 255, 255))
             SCREEN.blit(healthOfPlayerLabel, (0, 770))
             # ve thong tin level
             levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
@@ -853,13 +1042,13 @@ class Game():
         mixer.music.play(-1)
 
         # load playing background image
-        backgroundImage = pygame.transform.scale(pygame.image.load("media/images/level4_background.jpg"), (1280, 800))
+        backgroundImage = pygame.transform.scale(pygame.image.load("media/images/level4_background.jpg"), (1422, 800))
 
         # khai bao clock
         clock = pygame.time.Clock()
 
         # ra boss
-        ###################################
+        level4Enemies.add(Boss())
 
         # --------------------------------------------------------------------------------------------------------------
         ## day la vong lap game
@@ -904,11 +1093,14 @@ class Game():
             scoreLabel = mainFont.render(f"Score: {SCORE}", True, (255, 255, 255))
             SCREEN.blit(scoreLabel, (0, 0))
             # ve thong tin health cua player
-            healthOfPlayerLabel = mainFont.render(f"Player's health: {self.player.health}", 1, (255, 255, 255))
+            healthOfPlayerLabel = mainFont.render(f"Player's health: {HEALTHPLAYER}", 1, (255, 255, 255))
             SCREEN.blit(healthOfPlayerLabel, (0, 770))
             # ve thong tin level
             levelLabel = mainFont.render(f"Level: {LEVEL}", 1, (255, 255, 255))
             SCREEN.blit(levelLabel, (1175, 0))
+            # ve thong tin health cua boss
+            healthBossLabel = mainFont.render(f"Boss's health: {HEALTHBOSS}", 1, (255, 255, 255))
+            SCREEN.blit(healthBossLabel, (0, 50))
             # ve chi dan qua level 3
             if (LEVEL == 5):
                 hdchuyenlv_label = pygame.image.load("media/images/chidanqualevel_text.png")
