@@ -20,7 +20,7 @@ smallEggList = pygame.sprite.Group()
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
-LEVEL = 3
+LEVEL = 0
 SCORE = 0
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -512,6 +512,8 @@ class Boss(pygame.sprite.Sprite):
                         time.sleep(10)
                         LEVEL = 0
                         HEALTHPLAYER = 5
+                        SCORE = 0
+                        HEALTHBOSS = 100
 
                         pygame.display.update()
 
