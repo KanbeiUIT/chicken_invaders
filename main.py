@@ -16,17 +16,38 @@ level4Enemies = pygame.sprite.Group()
 
 lazerList = pygame.sprite.Group()
 smallEggList = pygame.sprite.Group()
+chickenLegList = pygame.sprite.Group()
 
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
-LEVEL = 0
+LEVEL = 2
 SCORE = 0
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 HEALTHBOSS = 100
 HEALTHPLAYER = 5
+
+
+
+class ChickenLeg(pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load("media/images/duiga.png"), (50, 50))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.speed = 2
+
+    def update(self):
+        self.rect.y += self.speed
+
+        # neu ra khoi man hinh thi se bi xoa
+        if (self.rect.y > SCREEN_HEIGHT):
+            chickenLegList.remove(self)
 
 
 class Egg(pygame.sprite.Sprite):
@@ -89,7 +110,12 @@ class Egg(pygame.sprite.Sprite):
         self.health = 5
         self.speed = random.randint(1, 5)
 
-    def update(self, ):
+    def rotDuiGa(self):
+        quyetdinh = random.randint(0, 3)
+        if (quyetdinh == 1):
+            chickenLegList.add(ChickenLeg(self.rect.x - self.image.get_width()/2, self.rect.y - self.image.get_height()/2))
+
+    def update(self):
         self.rect.y += self.speed
 
         # neu ra khoi man hinh thi se xuat hien lai
@@ -114,10 +140,11 @@ class Egg(pygame.sprite.Sprite):
                 self.health -= 1
                 if (self.health == 0):
                     level1Enemies.remove(self)
+                    self.rotDuiGa()
                     self.sound = mixer.Sound("media/sounds/explosion.wav")
                     self.sound.play()
                     global SCORE
-                    SCORE += 1
+                    SCORE += 10
                     if not level1Enemies:
                         mixer.music.load("media/sounds/level_complete.wav")
                         mixer.music.play()
@@ -189,7 +216,12 @@ class UFO(pygame.sprite.Sprite):
         self.health = 5
         self.speed = random.randint(1, 3)
 
-    def update(self, ):
+    def rotDuiGa(self):
+        quyetdinh = random.randint(0, 3)
+        if (quyetdinh == 1):
+            chickenLegList.add(ChickenLeg(self.rect.x - self.image.get_width()/2, self.rect.y - self.image.get_height()/2))
+
+    def update(self):
         self.rect.x += self.speed
 
         # neu ra khoi man hinh thi se xuat hien lai
@@ -214,10 +246,11 @@ class UFO(pygame.sprite.Sprite):
                 self.health -= 1
                 if (self.health == 0):
                     level2Enemies.remove(self)
+                    self.rotDuiGa()
                     self.sound = mixer.Sound("media/sounds/explosion.wav")
                     self.sound.play()
                     global SCORE
-                    SCORE += 1
+                    SCORE += 20
 
                     if not level2Enemies:
                         mixer.music.load("media/sounds/level_complete.wav")
@@ -290,6 +323,11 @@ class Chicken(pygame.sprite.Sprite):
         self.health = 5
         self.speed = random.randint(1, 3)
 
+    def rotDuiGa(self):
+        quyetdinh = random.randint(0, 3)
+        if (quyetdinh == 1):
+            chickenLegList.add(ChickenLeg(self.rect.x - self.image.get_width()/2, self.rect.y - self.image.get_height()/2))
+
     def update(self):
         self.rect.x -= self.speed
 
@@ -315,10 +353,11 @@ class Chicken(pygame.sprite.Sprite):
                 self.health -= 1
                 if (self.health == 0):
                     level3Enemies.remove(self)
+                    self.rotDuiGa()
                     self.sound = mixer.Sound("media/sounds/explosion.wav")
                     self.sound.play()
                     global SCORE
-                    SCORE += 1
+                    SCORE += 30
                     if not level3Enemies:
                         mixer.music.load("media/sounds/level_complete.wav")
                         mixer.music.play()
@@ -502,7 +541,7 @@ class Boss(pygame.sprite.Sprite):
                     level4Enemies.remove(self)
                     self.sound = mixer.Sound("media/sounds/explosion.wav")
                     self.sound.play()
-                    SCORE += 1
+                    SCORE += 100
                     if not level4Enemies:
                         mixer.music.load("media/sounds/level_complete.wav")
                         mixer.music.play()
@@ -565,7 +604,6 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-
         self.sprites = []
         self.sprites.append(pygame.image.load("media/images/player/space_ship_-100.png"))
         self.sprites.append(pygame.image.load("media/images/player/space_ship_-90.png"))
@@ -634,6 +672,16 @@ class Player(pygame.sprite.Sprite):
         global LEVEL
         global HEALTHPLAYER
         global HEALTHBOSS
+
+        # neu player cham vao dui ga
+        for duiga in chickenLegList:
+            if (pygame.sprite.collide_rect(self, duiga)):
+                self.sound = mixer.Sound("media/sounds/earnduiga.wav")
+                self.sound.play()
+                chickenLegList.remove(duiga)
+                SCORE += 5
+                pygame.display.update()
+
         # neu player cham vao egg
         for egg in level1Enemies:
             if (pygame.sprite.collide_rect(self, egg)):
@@ -641,7 +689,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound.play()
                 level1Enemies.remove(egg)
                 HEALTHPLAYER -= 1
-                SCORE += 1
+                SCORE += 10
                 pygame.display.update()
 
                 if (HEALTHPLAYER == 0):
@@ -676,7 +724,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound.play()
                 level2Enemies.remove(ufo)
                 HEALTHPLAYER -= 1
-                SCORE += 1
+                SCORE += 20
                 pygame.display.update()
 
                 if (HEALTHPLAYER == 0):
@@ -711,7 +759,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound.play()
                 level3Enemies.remove(chicken)
                 HEALTHPLAYER -= 1
-                SCORE += 1
+                SCORE += 30
                 pygame.display.update()
 
                 if (HEALTHPLAYER == 0):
@@ -936,6 +984,9 @@ class Game():
             lazerList.draw(SCREEN)
             lazerList.update()
 
+            chickenLegList.draw(SCREEN)
+            chickenLegList.update()
+
             pygame.display.update()
             # ----------------------------------------------------------------------------------------------------------
 
@@ -1017,6 +1068,9 @@ class Game():
             lazerList.draw(SCREEN)
             lazerList.update()
 
+            chickenLegList.draw(SCREEN)
+            chickenLegList.update()
+
             pygame.display.update()
             # ----------------------------------------------------------------------------------------------------------
 
@@ -1097,6 +1151,9 @@ class Game():
 
             lazerList.draw(SCREEN)
             lazerList.update()
+
+            chickenLegList.draw(SCREEN)
+            chickenLegList.update()
 
             pygame.display.update()
             # ----------------------------------------------------------------------------------------------------------
