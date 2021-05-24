@@ -15,6 +15,7 @@ level3Enemies = pygame.sprite.Group()
 level4Enemies = pygame.sprite.Group()
 
 lazerList = pygame.sprite.Group()
+smallEggList = pygame.sprite.Group()
 
 # cac bien toan cuc
 SCREEN_WIDTH = 1280
@@ -328,6 +329,29 @@ class Chicken(pygame.sprite.Sprite):
                         LEVEL = 4
                         pygame.display.update()
 
+
+class SmallEgg(pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load("media/images/egg_bullet.png"), (50, 50))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.speed = 2
+
+        self.sound = mixer.Sound("media/sounds/shot.wav")
+        self.sound.play()
+
+    def update(self):
+        self.rect.y += self.speed
+
+        # neu ra khoi man hinh thi se bi xoa
+        if (self.rect.y > SCREEN_HEIGHT):
+            smallEggList.remove(self)
+
+
 class Boss(pygame.sprite.Sprite):
 
     def __init__(self):
@@ -407,8 +431,19 @@ class Boss(pygame.sprite.Sprite):
     def randomHuongDiChuyen(self):
         self.moveWay = random.randint(0, 3)
 
+    def deTrung(self):
+        quyetdinh = random.randint(0, 110)
+        if (quyetdinh == 100):
+            randomx = random.randint(self.rect.x, self.rect.x + self.image.get_width())
+            smallEggList.add(SmallEgg(randomx, self.rect.y + self.image.get_height()))
 
     def update(self):
+        # su dung cac bien toan cuc
+        global HEALTHBOSS
+        global SCORE
+        global LEVEL
+        global HEALTHPLAYER
+
         # reset hoat anh
         if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
             self.current_sprite += 1
@@ -416,6 +451,10 @@ class Boss(pygame.sprite.Sprite):
         if (self.current_sprite >= len(self.sprites)):
             self.current_sprite = 0
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (300, 300))
+
+        # boss de trung
+        if (HEALTHBOSS != 0):
+            self.deTrung()
 
         # neu cham vao ria man hinh thi doi huong di chuyen
         # cham goc tren + trai
@@ -454,10 +493,6 @@ class Boss(pygame.sprite.Sprite):
         self.diChuyen()
 
         # khi lazer ban trung Boss
-        global HEALTHBOSS
-        global SCORE
-        global LEVEL
-        global HEALTHPLAYER
         for lazer in lazerList:
             if (pygame.sprite.collide_rect(self, lazer)):
                 lazerList.remove(lazer)
@@ -470,14 +505,15 @@ class Boss(pygame.sprite.Sprite):
                     if not level4Enemies:
                         mixer.music.load("media/sounds/level_complete.wav")
                         mixer.music.play()
-                        completedlevel_label = pygame.image.load("media/images/completedlevel_text.png")
-                        SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 353, SCREEN_HEIGHT / 2 - 26))
+                        completedlevel_label = pygame.image.load("media/images/win_text.png")
+                        SCREEN.blit(completedlevel_label, (SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 26))
                         pygame.display.update()
                         time.sleep(10)
                         LEVEL = 0
                         HEALTHPLAYER = 5
 
                         pygame.display.update()
+
 
 class Laser(pygame.sprite.Sprite):
 
@@ -707,7 +743,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound.play()
                 HEALTHPLAYER -= 1
                 HEALTHBOSS -= 1
-                self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+                self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 528)
                 pygame.display.update()
 
                 if (HEALTHPLAYER == 0):
@@ -736,6 +772,30 @@ class Player(pygame.sprite.Sprite):
                     self.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 330)
                     pygame.display.update()
 
+        # neu player cham vao SmallEgg
+        for smallegg in smallEggList:
+            if (pygame.sprite.collide_rect(self, smallegg)):
+                self.sound = mixer.Sound("media/sounds/playerbehit.wav")
+                self.sound.play()
+                smallEggList.remove(smallegg)
+                HEALTHPLAYER -= 1
+                SCORE += 1
+                pygame.display.update()
+
+                if (HEALTHPLAYER == 0):
+                    self.sound = mixer.Sound("media/sounds/game_over_background_music.wav")
+                    pygame.mixer.music.stop()
+                    gameover_label = pygame.image.load("media/images/gameover_text.png")
+                    SCREEN.blit(gameover_label, (SCREEN_WIDTH / 2 - 260, SCREEN_HEIGHT / 2 - 33))
+                    pygame.display.update()
+                    self.sound.play()
+                    time.sleep(10)
+                    LEVEL = 0
+                    SCORE = 0
+                    HEALTHPLAYER = 5
+                    self.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 330)
+                    for enemy in smallEggList:
+                        smallEggList.remove(enemy)
 
 class Game():
 
@@ -1116,6 +1176,9 @@ class Game():
 
             lazerList.draw(SCREEN)
             lazerList.update()
+
+            smallEggList.draw(SCREEN)
+            smallEggList.update()
 
             pygame.display.update()
             # ----------------------------------------------------------------------------------------------------------
