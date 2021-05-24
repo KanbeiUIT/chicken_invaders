@@ -279,19 +279,19 @@ class Chicken(pygame.sprite.Sprite):
 
         self.image = pygame.transform.scale(self.sprites[self.current_sprite], (64, 64))
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
-        self.rect.y = random.randint(-800, 0)
+        self.rect.x = random.randint(SCREEN_WIDTH, SCREEN_WIDTH + 800)
+        self.rect.y = random.randint(0, 800)
 
         self.health = 5
         self.speed = random.randint(1, 2)
 
     def update(self, ):
-        self.rect.y += self.speed
+        self.rect.x -= self.speed
 
         # neu ra khoi man hinh thi se xuat hien lai
-        if (self.rect.y > SCREEN_HEIGHT):
-            self.rect.x = random.randint(0, SCREEN_WIDTH - self.rect.width)
-            self.rect.y = random.randint(-800, 0)
+        if (self.rect.x < 0):
+            self.rect.x = random.randint(SCREEN_WIDTH, SCREEN_WIDTH + 800)
+            self.rect.y = random.randint(0, 800)
             self.speed = random.randint(1, 2)
 
         if pygame.time.get_ticks() - self.last_update_animation > self.IMAGE_INTERVAL:
