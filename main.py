@@ -342,6 +342,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound.play()
                 level1Enemies.remove(egg)
                 self.health -= 1
+                SCORE += 1
                 pygame.display.update()
 
                 if (self.health == 0):
@@ -377,6 +378,7 @@ class Player(pygame.sprite.Sprite):
                 self.sound.play()
                 level2Enemies.remove(ufo_2)
                 self.health -= 1
+                SCORE += 1
                 pygame.display.update()
 
                 if (self.health == 0):
@@ -410,20 +412,10 @@ class Game():
     def __init__(self):
         pygame.init()
 
-        # spritegroup object
-        #self.spritegroup = pygame.sprite.Group()
-
-        # trang thai cua game
-        self.__gameState = "intro"
-
         # FPS
         self.__FPS = 144
 
-        # level
-        self.__level = 1
-
-        # tao cua so game
-        #self.__screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        # chinh sua cua so game
         icon = pygame.image.load("media/images/icon.png")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Chicken Invaders")
@@ -575,6 +567,8 @@ class Game():
             global LEVEL
             if (LEVEL == 0):
                 gameIsBeingPlayed = False
+            # thiet lap FPS
+            clock.tick(self.__FPS)
 
             SCREEN.blit(backgroundImage, (0, 0))
 
